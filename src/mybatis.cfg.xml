@@ -1,0 +1,28 @@
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <!-- mybatis是支持自定义别名的 -->
+    <typeAliases>
+    	<!-- 
+	    	<typeAlias type="model.Product" alias="product"/>
+    	 -->
+    	 <!-- 每次单独配置别名非常繁琐,mybatis支持包扫描,自动扫描model中的所有类,默认别名是类名且第一个字母小写 -->
+    	 <package name="cn.dw.model"/>
+    </typeAliases>
+
+	<!--   此处是映射文件的配置,后期SQL语句会写到此映射文件中   -->
+	<mappers>
+	    <!-- 
+			<mapper resource="cn/dw/dao/ProductDao.xml" />
+	     -->	
+	     <!-- 如果有多个mapper文件,则也可以采用包扫描 -->
+		<package name="cn.dw.dao" />
+	</mappers>
+	
+</configuration>
+
+
+
+

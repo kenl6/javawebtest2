@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 当前xml文件会取代以后daoImpl,因此所有的SQL语句建议编写XML文件中,而且此XML文件需要添加到mybatis.cfg.xml主配置文件中 -->
+<mapper namespace="cn.dw.dao.ProductDao">
+   
+   <!-- 默认是开启的缓存配置 -->
+   <cache type="org.mybatis.caches.ehcache.LoggingEhcache" />
+
+   <resultMap type="product" id="baseMap">
+   		<!-- 主键才使用id标签 -->
+   		<id property="id" column="pro_id"/>
+   		<result property="name" column="pro_name"/>
+   		<result property="price" column="pro_price"/>
+   		<result property="remark" column="pro_remark"/>
+   		<result property="date" column="pro_date"/>
+   </resultMap>
+   
+   <resultMap type="product" id="joinCategory" extends="baseMap">
+   	   <!-- 配置关联Category类别表   resultMap: 指向CategoryDao.xml映射文件中的map-->
+   	   <association property="category" resultMap="cn.dw.dao.CategoryDao.baseMap" />
+   </resultMap>
+
+   <!-- 此处将要编写数据入库的SQL语句    public void save(Product product)-->
+   <insert id="save" parameterType="product">
+       <!-- #{name},会自动调用Product.getName()方法  -->
+   	   insert into product (pro_name,pro_price,pro_remark,cat_id) values (#{name},#{price},#{remark},#{category.id})
+   </insert>
+   <!-- 如果表的列名与类的属性名称不匹配,则无法自动注入,因此需要自定义匹配规则.ResultMap -->
+   <select id="getById" parameterType="int" resultMap="baseMap">
+   	   select * from product where pro_id = #{id}
+   </select>
+   <!-- 如果接口中有多个参数,则通过@Param来绑定 -->
+   <select id="queryByName" resultMap="joinCategory">
+   	   select * from product p join category c on p.cat_id = c.cat_id where p.pro_name like #{name} limit #{start},#{end}
+   </select>
+   
+   <update id="update" parameterType="product">
+       <!-- #{name},会自动调用Product.getName()方法  
+	   	   update product set name = #{name},price = #{price},remark = #{remark},date=#{date} where id = #{id}
+       -->
+       update product
+       <!-- set会自动删除最后一个,号 -->
+       <set>
+       		<if test="name!=null">
+       			name = #{name},
+       		</if>
+       		<if test="price!=null">
+       			price = #{price},
+       		</if>
+       		<if test="remark!=null">
+       			remark = #{remark},
+       		</if>
+       		<if test="date!=null">
+       			date = #{date},
+       		</if>
+       </set>
+       where id = #{id}
+   </update>
+   <!-- 如果只有一个参数, 那么#{名称随意},当然为了规范,建议与参数相同 -->
+   <delete id="delete" parameterType="int">
+        delete from product where id = #{id}
+   </delete>
+  
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
